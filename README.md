@@ -29,3 +29,4 @@ WinC is **not** a compiler, its just a front end for MinGW (for now) to quickly 
 
 ##contributing?
 WinC is under GNU GPL2. You can fork and add what ever you want, if you want to make pull requests you are welcomed.
+WinC is made with SharpShell library that makes the context menu entry and necessary registry entries for all c files.
