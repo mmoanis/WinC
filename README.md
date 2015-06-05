@@ -3,7 +3,7 @@ Run c/c++ "scripts" on windows on the go!!
 
 > "There isn't much that's special about C. That's one of the reasons why it's fast."
 
-[Based on](https://github.com/ryanmjacobs/c) rayan's c project that let c files runs the shell way.
+[Based on](https://github.com/ryanmjacobs/c) Ryan's c project that let c files runs the shell way.
 Here comes its windows version.
 With this dll you can run any c/c++ "script" just by a double click!
 You need no IDE or terminals, just do it the windows and shell way and double click the script to run it!
