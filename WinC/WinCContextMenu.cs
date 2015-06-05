@@ -36,8 +36,21 @@ namespace WinC
                 Text = "Run!"
             };
 
-            itemRun.Click += (sender, args) => RunFile();
+            var itemRunWithArgs = new ToolStripMenuItem
+            {
+                Text = "Run with args"
+            };
+
+            itemRun.Click += (sender, args) => RunFile("");
+            itemRunWithArgs.Click += (sender, args) =>
+                {
+                    FormInputPrompt frmInputPrompt = new FormInputPrompt("Run arguments", "arguments:");
+                    if (frmInputPrompt.ShowDialog() == DialogResult.OK)
+                        RunFile(frmInputPrompt.InputText);
+                };
+
             menu.Items.Add(itemRun);
+            menu.Items.Add(itemRunWithArgs);
             return menu;
         }
 
@@ -45,17 +58,17 @@ namespace WinC
         /// Compile and run the selected file.
         /// </summary>
         /// <returns></returns>
-        private void RunFile()
+        private void RunFile(string runargs)
         {
             foreach(string s in SelectedItemPaths)
             {
-                EventLog.WriteEntry("WinC", "winc called to file " + s, EventLogEntryType.Information);
+                EventLog.WriteEntry("WinC", "wincv0.2 called to file " + s, EventLogEntryType.Information);
                 WinC winc = new WinC
                 {
                     CompilerArguments = "",
                     CompilerName = "MinGW",
                     PathToCompiler = @"C:\MinGW\bin",
-                    RunArguments = "",
+                    RunArguments = runargs,
                     SourceFile = s
                 };
 

@@ -127,11 +127,11 @@ namespace WinC
                 compilerArguments = "g++ " + compilerArguments;
             }
 
-            outputfile = Path.GetDirectoryName(file) + "output.txt";
-            string inputFile = Path.GetDirectoryName(file) + "input.txt";
+            outputfile = Path.GetDirectoryName(file) + "\\output.txt";
+            string inputFile = Path.GetDirectoryName(file) + "\\input.txt";
 
             // direct the input and output streams of the program to input/output.txt
-            runArguments = "temp.exe " + runArguments + " < " + inputFile;
+            runArguments = "temp " + runArguments + " < " + inputFile;
 
             EventLog.WriteEntry(sLogTag, "compiling with " + compilerArguments, EventLogEntryType.Information);
             EventLog.WriteEntry(sLogTag, "run with " + runArguments, EventLogEntryType.Information);
