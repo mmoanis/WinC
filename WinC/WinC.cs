@@ -110,21 +110,25 @@ namespace WinC
             {
                 LoadConfigurationFromFile();
             }
-            catch (FileNotFoundException e1)
+            catch (FileNotFoundException)
             {
-                EventLog.WriteEntry(sLogTag, e1.Message, EventLogEntryType.Error);
+                EventLog.WriteEntry(sLogTag, "configuration file not found, setting flags to nil.", EventLogEntryType.Error);
+                compilerArguments = string.Empty;
             }
-            catch (XmlException e2)
+            catch (XmlException)
             {
-                EventLog.WriteEntry(sLogTag, e2.Message, EventLogEntryType.Error);
+                EventLog.WriteEntry(sLogTag, "bad configuration file.", EventLogEntryType.Error);
+                compilerArguments = string.Empty;
             }
-            catch (ArgumentException e3)
+            catch (ArgumentException)
             {
-                EventLog.WriteEntry(sLogTag, e3.Message, EventLogEntryType.Error);
+                EventLog.WriteEntry(sLogTag, "bad configuration file.", EventLogEntryType.Error);
+                compilerArguments = string.Empty;
             }
-            catch (Exception e4)
+            catch (Exception e)
             {
-                EventLog.WriteEntry(sLogTag, e4.Message, EventLogEntryType.Error);
+                EventLog.WriteEntry(sLogTag, "exception " + e.Message, EventLogEntryType.Error);
+                compilerArguments = string.Empty;
             }
 
             errors = new ArrayList();
