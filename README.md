@@ -22,7 +22,7 @@ The project is still at the very beginning, for now those are the things planned
 - running multiple files
 - support Visual c++ cl compiler
 - run with arguments
-- add custom compiling flags
+- ~~add custom compiling flags~~ Done!
 
 ##Notes
 WinC is **not** a compiler, its just a front end for MinGW (for now) to quickly running c/c++ files as shell scripts.
