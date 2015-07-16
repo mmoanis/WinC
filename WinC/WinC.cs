@@ -139,7 +139,7 @@ namespace WinC
             // check the input file
             if(!File.Exists(Path.Combine( Path.GetDirectoryName(file), "input.txt")))
             {
-                EventLog.WriteEntry(sLogTag, "making input file", EventLogEntryType.Information);
+                //EventLog.WriteEntry(sLogTag, "making input file", EventLogEntryType.Information);
                 makeInputFile = true;
                 FileStream fs = File.Create(Path.Combine( Path.GetDirectoryName(SourceFile), "input.txt"));
                 fs.Close();
@@ -165,8 +165,8 @@ namespace WinC
             // direct the input and output streams of the program to input/output.txt
             runArguments = tempExeFilePath + " " + runArguments + " < " + inputFile;
 
-            EventLog.WriteEntry(sLogTag, "compiling with " + compilerArguments, EventLogEntryType.Information);
-            EventLog.WriteEntry(sLogTag, "run with " + runArguments, EventLogEntryType.Information);
+            //EventLog.WriteEntry(sLogTag, "compiling with " + compilerArguments, EventLogEntryType.Information);
+            //EventLog.WriteEntry(sLogTag, "run with " + runArguments, EventLogEntryType.Information);
         }
 
         public void Run()
@@ -206,6 +206,9 @@ namespace WinC
             p.Close();
         }
 
+        /// <summary>
+        /// Write the results in output file.
+        /// </summary>
         public void MakeOutputFile()
         {
             FileStream outputFileStream = File.Create(outputfile);
