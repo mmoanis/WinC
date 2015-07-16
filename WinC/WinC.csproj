@@ -50,23 +50,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InputPrompt.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="InputPrompt.Designer.cs">
-      <DependentUpon>InputPrompt.cs</DependentUpon>
-    </Compile>
     <Compile Include="WinC.cs" />
     <Compile Include="WinCContextMenu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="key.snk" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="InputPrompt.resx">
-      <DependentUpon>InputPrompt.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

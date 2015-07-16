@@ -36,21 +36,9 @@ namespace WinC
                 Text = "Run!"
             };
 
-            var itemRunWithArgs = new ToolStripMenuItem
-            {
-                Text = "Run with args"
-            };
-
-            itemRun.Click += (sender, args) => RunFile("");
-            itemRunWithArgs.Click += (sender, args) =>
-                {
-                    FormInputPrompt frmInputPrompt = new FormInputPrompt("Run arguments", "arguments:");
-                    if (frmInputPrompt.ShowDialog() == DialogResult.OK)
-                        RunFile(frmInputPrompt.InputText);
-                };
+            itemRun.Click += (sender, args) => RunFile();
 
             menu.Items.Add(itemRun);
-            menu.Items.Add(itemRunWithArgs);
             return menu;
         }
 
@@ -58,25 +46,41 @@ namespace WinC
         /// Compile and run the selected file.
         /// </summary>
         /// <returns></returns>
-        private void RunFile(string runargs)
+        private void RunFile()
         {
+            // currently there is a bug with the sharp shell prompt and actually it can select only
+            // 1 file at a time
+
+            string files = string.Empty;
             foreach(string s in SelectedItemPaths)
             {
-                EventLog.WriteEntry("WinC", "wincv0.2 called to file " + s, EventLogEntryType.Information);
-                WinC winc = new WinC
-                {
-                    CompilerArguments = "",
-                    CompilerName = "MinGW",
-                    PathToCompiler = @"C:\MinGW\bin",
-                    RunArguments = runargs,
-                    SourceFile = s
-                };
-
-                winc.Initialize();
-                winc.Run();
-                winc.MakeOutputFile();
-                winc.CleanUp();
+                files += s + " ";
             }
+
+            EventLog.WriteEntry("WinC", "wincv0.3.0.7 called for files " + files, EventLogEntryType.Information);
+
+
+            WinC winc = new WinC
+            {
+                /*CompilerArguments = "",   // read them from configuration file
+                CompilerName = "MinGW", //
+                PathToCompiler = @"C:\MinGW\bin",*/ // read path from configuration file
+                /*RunArguments = runargs,*/
+                // arguments are read from input file
+                SourceFile = files
+            };
+
+            // initialize
+            winc.Initialize();
+
+            // run
+            winc.Run();
+
+            // write output
+            winc.MakeOutputFile();
+
+            // close
+            winc.CleanUp();
         }
     }
 }
