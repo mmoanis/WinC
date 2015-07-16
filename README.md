@@ -11,7 +11,7 @@ You need no IDE or terminals, just do it the windows and shell way and double cl
 
 
 ##How to install it?
-For now, setup is somehow inmature, you need to install MinGW manually then, run the install.bat
+Just make sure you have MinGW and it ```..\MinGW\bin``` is in the ```%PATH%```. Then run install.bat file to setup WinC.
 
 ##How to use it?
 Right click any c/c++ file and click the Run! menu item. WinC will asume your input are in input.txt file near
