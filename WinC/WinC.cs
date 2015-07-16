@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading;
+using System.Xml;
 
 namespace WinC
 {
@@ -10,11 +12,12 @@ namespace WinC
     {
         private string sLogTag = "WinC";
         private string file;
-        private string pathToCompiler;
+        //private string pathToCompiler;
         private string compilerArguments;
-        private string compilerName;
+        private string compilerName = "MinGW";
         private string runArguments;
         private string outputfile;
+        private string tempExeFilePath;
         private bool makeInputFile;
         private ArrayList errors;
         private ArrayList output;
@@ -32,18 +35,18 @@ namespace WinC
             }
         }
 
-        public string PathToCompiler
-        {
-            get
-            {
-                return pathToCompiler;
-            }
+        //public string PathToCompiler
+        //{
+        //    get
+        //    {
+        //        return pathToCompiler;
+        //    }
 
-            set
-            {
-                pathToCompiler = value;
-            }
-        }
+        //    set
+        //    {
+        //        pathToCompiler = value;
+        //    }
+        //}
 
         public string CompilerArguments
         {
@@ -102,21 +105,46 @@ namespace WinC
 
         public void Initialize()
         {
+
+            try
+            {
+                LoadConfigurationFromFile();
+            }
+            catch (FileNotFoundException e1)
+            {
+                EventLog.WriteEntry(sLogTag, e1.Message, EventLogEntryType.Error);
+            }
+            catch (XmlException e2)
+            {
+                EventLog.WriteEntry(sLogTag, e2.Message, EventLogEntryType.Error);
+            }
+            catch (ArgumentException e3)
+            {
+                EventLog.WriteEntry(sLogTag, e3.Message, EventLogEntryType.Error);
+            }
+            catch (Exception e4)
+            {
+                EventLog.WriteEntry(sLogTag, e4.Message, EventLogEntryType.Error);
+            }
+
             errors = new ArrayList();
             output = new ArrayList();
 
             makeInputFile = false;
 
             // check the input file
-            if(!File.Exists(Path.GetDirectoryName(file) + "\\input.txt"))
+            if(!File.Exists(Path.Combine( Path.GetDirectoryName(file), "input.txt")))
             {
                 EventLog.WriteEntry(sLogTag, "making input file", EventLogEntryType.Information);
                 makeInputFile = true;
-                FileStream fs = File.Create(Path.GetDirectoryName(SourceFile) + "\\input.txt");
+                FileStream fs = File.Create(Path.Combine( Path.GetDirectoryName(SourceFile), "input.txt"));
                 fs.Close();
             }
 
-            compilerArguments = file + " " + compilerArguments + " -o temp.exe";
+            tempExeFilePath = Path.Combine(Path.GetDirectoryName(file), "temp.exe");
+
+            compilerArguments = file + " " + compilerArguments + " -o " + tempExeFilePath;
+
             // check the file language and adjust the compilation string
             if (file[file.Length - 1] == 'c')
             {
@@ -127,11 +155,11 @@ namespace WinC
                 compilerArguments = "g++ " + compilerArguments;
             }
 
-            outputfile = Path.GetDirectoryName(file) + "\\output.txt";
-            string inputFile = Path.GetDirectoryName(file) + "\\input.txt";
+            outputfile = Path.Combine( Path.GetDirectoryName(file), "output.txt");
+            string inputFile = Path.Combine( Path.GetDirectoryName(file), "input.txt");
 
             // direct the input and output streams of the program to input/output.txt
-            runArguments = "temp " + runArguments + " < " + inputFile;
+            runArguments = tempExeFilePath + " " + runArguments + " < " + inputFile;
 
             EventLog.WriteEntry(sLogTag, "compiling with " + compilerArguments, EventLogEntryType.Information);
             EventLog.WriteEntry(sLogTag, "run with " + runArguments, EventLogEntryType.Information);
@@ -139,6 +167,7 @@ namespace WinC
 
         public void Run()
         {
+            // TODO: no need to open it through cmd
             Process p = new Process();
             p.StartInfo = new ProcessStartInfo()
             {
@@ -148,7 +177,6 @@ namespace WinC
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
-                WorkingDirectory = pathToCompiler
 
             };
 
@@ -211,14 +239,14 @@ namespace WinC
         /// </summary>
         public void CleanUp()
         {
-            if (File.Exists(pathToCompiler + "\\temp.exe"))
+            if (File.Exists(tempExeFilePath))
             {
-                File.Delete(pathToCompiler + "\\temp.exe");
+                File.Delete(tempExeFilePath);
             }
 
             // remove input file if it was created by the program
             if (makeInputFile)
-                File.Delete(Path.GetDirectoryName(file) + "\\input.txt");
+                File.Delete(Path.Combine(Path.GetDirectoryName(file), "input.txt"));
         }
 
         private void ErrorDataReceivedHandler(object sender, DataReceivedEventArgs e)
@@ -230,6 +258,29 @@ namespace WinC
         private void OutputDataReceivedHandler(object sender, DataReceivedEventArgs e)
         {
             output.Add(e.Data);
+        }
+
+        /// <summary>
+        /// Opens and parse the configuration file.
+        /// </summary>
+        /// <returns>true on success, false otherwise.</returns>
+        private void LoadConfigurationFromFile()
+        {
+            // get the path of the dll
+            string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string xmlFileName = Path.Combine(assemblyFolder, "config.xml");
+
+            XmlDocument doc = null;
+            doc = new XmlDocument();
+            doc.Load(xmlFileName);
+
+            // read flags
+            XmlNodeList nodes = doc.GetElementsByTagName("Flags");
+            if (nodes.Count != 1)
+                throw new ArgumentException("incorrect configuration for the compiler flags.");
+
+            compilerArguments = nodes[0].InnerText;
+            EventLog.WriteEntry(sLogTag, "compiler args " + compilerArguments, EventLogEntryType.Information);
         }
     }
 }
